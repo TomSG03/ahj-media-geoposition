@@ -22,7 +22,7 @@
   },
   "author": "Tomilov",
   "license": "MIT",
-  "homepage": "https://github.com/TomSG03/ahj-ws-chat-fe",
+  "homepage": "https://github.com/TomSG03/ahj-media-geoposition",
   "devDependencies": {
     "@babel/cli": "^7.12.10",
     "@babel/core": "^7.12.10",
