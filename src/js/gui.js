@@ -1,4 +1,4 @@
-// V 0.2
+// V 0.21
 
 /* eslint-disable guard-for-in */
 export default class GUI {
@@ -25,6 +25,7 @@ export default class GUI {
             <div class="input-ask-block">
               <div class="head-input-ask">${obj[key].head}</div>
               <input class="input-ask" type="text" value="${obj[key].value}" required>
+              <p class="input-err">${obj[key].error}</p>
             </div>
           `;
           break;
@@ -60,15 +61,18 @@ export default class GUI {
     this.winModal.appendChild(divWindow);
     document.body.appendChild(this.winModal);
 
+    const canFocus = document.querySelector('.input-ask');
+    if (canFocus) {
+      canFocus.focus();
+    }
+
     this.ok = this.winModal.querySelector('.btnOk');
     if (this.ok) {
-      this.ok.addEventListener('click', this.checkValidity.bind(this, callback));
-      this.ok.addEventListener('keydown', this.eventKey.bind(this, callback));
+      this.ok.addEventListener('click', this.checkCoords.bind(this, callback));
     }
 
     this.cancel = this.winModal.querySelector('.btnCancel');
     if (this.cancel) {
-      this.cancel.addEventListener('keydown', this.eventKey);
       this.cancel.addEventListener('click', this.closeWinModal);
     }
   }
@@ -119,86 +123,20 @@ export default class GUI {
 
   // ---------------------------- add parts ---------------------------------
 
-  showConnect(msg) {
-    const div = document.createElement('div');
-    div.className = 'chat-msg-block';
-    div.style.justifyContent = 'center';
-    div.innerHTML = `
-      <div class="block-msg">
-        <p class"msg-body">${msg}</p>  
-      </div>
-      `;
-    this.chatBody.appendChild(div);
-    this.chatBody.scrollTop = this.chatBody.scrollHeight;
-  }
+  checkCoords(callback, e) {
+    const input = e.target.closest('.window-ask').querySelector('.input-ask');
 
-  showMsg(msg, date) {
-    const div = document.createElement('div');
-    div.className = 'chat-msg-block';
-    div.style.justifyContent = 'right';
-    div.innerHTML = `
-      <div class="block-msg">
-        <p class="msg-head">Yuо, ${date}</p>
-        <p class="msg-body">${msg}</p>
-      </div>
-      `;
-    this.chatBody.appendChild(div);
-    this.chatBody.scrollTop = this.chatBody.scrollHeight;
-  }
+    const position = input.value.split(',').map((coord) => coord.match(/[+|−|-|—|-]?\d{1,3}\.\d+/));
 
-  showParnersMsg(msg, nik) {
-    if (msg.name !== nik) {
-      const div = document.createElement('div');
-      div.className = 'chat-msg-block';
-      div.style.justifyContent = 'left';
-      div.innerHTML = `
-      <div class="block-msg-partner">
-        <p class="msg-head-partner">${msg.name}, ${msg.date}</p>
-        <p class="msg-body-partner">${msg.text}</p>
-      </div>
-      `;
-      this.chatBody.appendChild(div);
-      this.chatBody.scrollTop = this.chatBody.scrollHeight;
+    if (!position[0] || !position[1]) {
+      input.nextElementSibling.style.visibility = 'visible';
+      setTimeout(() => {
+        input.nextElementSibling.style.visibility = 'hidden';
+      }, 2000);
+      return;
     }
-  }
 
-  showConnectClients(arr, msg) {
-    if (Array.isArray(arr)) {
-      arr.forEach((e) => {
-        const div = document.createElement('div');
-        div.className = 'chat-msg-block';
-        div.style.justifyContent = 'center';
-        div.innerHTML = `
-      <div class="block-msg">
-        <p class"msg-body">${e} ${msg}</p>  
-      </div>
-      `;
-        this.chatBody.appendChild(div);
-        this.chatBody.scrollTop = this.chatBody.scrollHeight;
-      });
-    }
-  }
-
-  showAside(arr, nik) {
-    if (this.host.querySelector('.aside') !== null) {
-      this.host.querySelector('.aside').remove();
-    }
-    const chat = this.host.querySelector('.chat-desk');
-    const aside = document.createElement('div');
-    chat.style.position = 'relative';
-    aside.className = 'aside';
-    aside.style.top = `${20}px`;
-    aside.style.left = `${-250}px`;
-    arr.forEach((e) => {
-      const name = e === nik ? 'Yuo' : e;
-      const nameClient = document.createElement('div');
-      nameClient.className = 'aside-name-client';
-      nameClient.innerHTML += `
-         <div class="circle"></div>
-        <p>${name}</p>
-     `;
-      aside.appendChild(nameClient);
-    });
-    chat.appendChild(aside);
+    this.coords = { latitude: position[0][0], longitude: position[1][0] };
+    callback();
   }
 }

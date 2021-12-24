@@ -2,7 +2,6 @@
   margin: 0;
   padding: 0;
   box-sizing: border-box;
-  line-height: 0.7;
 }
 
 body {
@@ -63,6 +62,11 @@ body {
   padding: 5px 0;
 }
 
+.geo::after {
+  content: '🌍';
+  font-size: 1rem;
+}
+
 .input-body {
   box-sizing: border-box;
   width: 100%;
@@ -81,6 +85,7 @@ body {
   line-height: normal;
   z-index: 10;
   box-shadow: 0 5px 30px 0 rgba(0,0,0,0.2);
+  border-radius:  4px;
 }
 
 .input-body::before {
