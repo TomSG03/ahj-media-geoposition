@@ -1,11 +1,11 @@
 // V 0.21
 
+// ---------------------------- standart parts ---------------------------------
 /* eslint-disable guard-for-in */
 export default class GUI {
   constructor(host) {
     this.host = host;
     this.closeWinModal = this.closeWinModal.bind(this);
-    this.chatBody = host.querySelector('.chat-body');
   }
 
   winModalDialog(obj = {}, callback) {
@@ -125,18 +125,23 @@ export default class GUI {
 
   checkCoords(callback, e) {
     const input = e.target.closest('.window-ask').querySelector('.input-ask');
-
-    const position = input.value.split(',').map((coord) => coord.match(/[+|−|-|—|-]?\d{1,3}\.\d+/));
-
-    if (!position[0] || !position[1]) {
+    this.coords = this.checkValidCoords(input.value);
+    if (!this.coords) {
       input.nextElementSibling.style.visibility = 'visible';
       setTimeout(() => {
         input.nextElementSibling.style.visibility = 'hidden';
       }, 2000);
       return;
     }
-
-    this.coords = { latitude: position[0][0], longitude: position[1][0] };
     callback();
+  }
+
+  // eslint-disable-next-line class-methods-use-this
+  checkValidCoords(input) {
+    const position = input.split(',').map((coord) => coord.match(/[+|−|-|—|-]?\d{1,3}\.\d+/));
+    if (!position[0] || !position[1]) {
+      return false;
+    }
+    return { latitude: position[0][0], longitude: position[1][0] };
   }
 }
